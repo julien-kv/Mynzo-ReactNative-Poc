@@ -13,7 +13,7 @@
 @implementation AppDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  //initialise variabled
+  //initialise variables
   self.activityManager = [[CMMotionActivityManager alloc] init];
   self.motionManager = [[CMMotionManager alloc] init];
   self.queue = [[NSOperationQueue alloc] init];
@@ -21,7 +21,7 @@
   self.latitude = 0.0;
   self.longitude = 0.0;
   self.current_time = [[NSDate date] timeIntervalSince1970];
-  
+
   self.moduleName = @"mynzoPoc";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
@@ -32,13 +32,12 @@
     [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"firstTime"];
     [[NSUserDefaults standardUserDefaults] setDouble:[[NSDate date] timeIntervalSince1970] forKey:@"syncDate"];
   }
-  
   [application registerForRemoteNotifications];
-
   [self StartupdateLocation];
   [self getactivitytracking];
   return YES;
 }
+
 
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -59,25 +58,25 @@
   });
 }
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application{
-  
+  [super applicationDidReceiveMemoryWarning:application];
+  [Logger writeWithText:@"memory warning" to:kLogsFile folder:kLogsDirectory];;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
   CLLocation *location = locations.lastObject;
+  //start tracking
+  [self startTracking];
   self.latitude = location.coordinate.latitude;
   self.longitude = location.coordinate.longitude;
   [Logger writeWithText:[NSString stringWithFormat:@"updated location - Latitude: %a , Longitude: %a",self.latitude,self.longitude ] to:kLogsFile folder:kLogsDirectory];
-  //  Logger.write(text: ("updated location - Latitude: \(self.latitude) , Longitude: \(self.longitude)"))
-  
-  
-  NSLog(@"updated location - Latitude: %f , Longitude: %f", self.latitude, self.longitude);
 }
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error{
+  NSLog(@"Error while requesting new coordinates");
   
 }
-
-
-
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager{
+  
+}
 
 - (void)applicationWillTerminate:(UIApplication *)application{
   [self.locationManager startMonitoringSignificantLocationChanges];
